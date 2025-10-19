@@ -2,6 +2,7 @@ package persistencia;
 import java.io.*;
 import java.util.*;
 import modelo.*;
+import usuarios.Cliente;
 
 public class PersistenciaUsuarios {
 
