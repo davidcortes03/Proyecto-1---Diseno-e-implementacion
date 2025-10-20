@@ -4,11 +4,18 @@ public class Asiento {
 
 	private int numero;
 	private boolean estaOcupado;
+	private Localidad localidad;
 	
-	public Asiento (int numero) {
+	public Asiento (int numero, boolean estaOcupado) {
 		this.numero = numero;
 		this.estaOcupado = false;
 	}
+	
+    public Asiento(int numero, boolean ocupado, Localidad localidad) {
+        this.numero = numero;
+        this.estaOcupado = ocupado;
+        this.localidad = localidad;
+    }
 	
 	public void setNumero (int nuevoNumero) {
 		if (nuevoNumero <= 0) {
@@ -31,7 +38,13 @@ public class Asiento {
 		this.estaOcupado = true;
 	}
 	
-	
+    public boolean isOcupado() { 
+    	return estaOcupado; 
+    	}
+    
+    public void setOcupado(boolean ocupado) {
+    	this.estaOcupado = ocupado; 
+    	}
 	
 	public void liberarAsiento() {
 		

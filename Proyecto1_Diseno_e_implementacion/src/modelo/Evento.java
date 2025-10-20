@@ -60,7 +60,7 @@ public class Evento {
         }
         estado = false;
         PersistenciaEvento.cancelarEvento(this);
-        System.out.println("⚠ Evento cancelado: " + nombreEvento);
+        System.out.println("Evento cancelado: " + nombreEvento);
         return true;
     }
 
