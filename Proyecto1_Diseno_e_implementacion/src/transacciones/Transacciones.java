@@ -1,9 +1,14 @@
 package transacciones;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.lang.StringBuilder;
 
 import usuarios.Cliente;
+import modelo.Tiquete;
+import modelo.Evento;
+import modelo.Localidad;
+import usuarios.ClienteNatural;
 
 public class Transacciones {
 	
@@ -99,6 +104,7 @@ public class Transacciones {
 			
 			this.tiquetes.add(nuevoTiquete);
 		
+		}
 	}
 	
 	public boolean procesarReembolso() {
