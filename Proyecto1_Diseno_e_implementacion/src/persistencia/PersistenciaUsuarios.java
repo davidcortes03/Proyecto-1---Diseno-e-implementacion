@@ -1,26 +1,55 @@
 package persistencia;
+
 import java.io.*;
 import java.util.*;
 import modelo.*;
 import usuarios.Cliente;
 
+/**
+ * Clase encargada de manejar la persistencia de los usuarios en el sistema.
+ * Administra la carga, almacenamiento y actualización de objetos que extienden la clase {@link Cliente}.
+ *
+ * Toda la información se guarda en el archivo <b>usuarios.txt</b> dentro de la carpeta <i>data/</i>,
+ * donde cada línea representa un usuario con sus atributos separados por punto y coma (;).
+ *
+ * Esta clase garantiza que los datos de los usuarios se mantengan sincronizados
+ * entre la memoria del programa y el archivo de texto.
+ *
+ * @version 1.0
+ */
 public class PersistenciaUsuarios {
 
     private static final String RUTA_ARCHIVO = "data/usuarios.txt";
 
-    // 🧠 Lista única y viva de clientes cargados
+    /** Lista principal de clientes cargados desde el archivo */
     private static final List<Cliente> clientes = new ArrayList<>();
 
     // =========================================================
-    // 1️⃣ Inicialización automática (bloque estático)
+    // 1️⃣ Inicialización automática
     // =========================================================
     static {
-        cargarUsuarios(); // se ejecuta una sola vez al cargar la clase
+        // Este bloque se ejecuta una sola vez cuando la clase es cargada
+        cargarUsuarios();
     }
 
     // =========================================================
-    // 2️⃣ CARGAR USUARIOS DESDE EL ARCHIVO
+    // 2️⃣ CARGA DE USUARIOS DESDE ARCHIVO
     // =========================================================
+
+    /**
+     * Carga todos los usuarios almacenados en el archivo <b>usuarios.txt</b>.
+     * Si el archivo no existe, se muestra un mensaje y el archivo será creado
+     * automáticamente la próxima vez que se guarden usuarios.
+     *
+     * Cada línea del archivo debe seguir el formato:
+     * <pre>
+     * tipo;nombre;email;contraseña;saldo;gastado
+     * </pre>
+     *
+     * Donde:
+     * - tipo puede ser "ClienteNatural", "Organizador" o "Administrador".
+     * - Los últimos dos campos solo aplican para los clientes naturales.
+     */
     public static void cargarUsuarios() {
 
         clientes.clear();
@@ -45,12 +74,15 @@ public class PersistenciaUsuarios {
                         String email = partes[2];
                         String contrasena = partes[3];
 
+                        // Dependiendo del tipo, se crea el objeto correspondiente
                         if (tipo.equals("ClienteNatural") && partes.length >= 6) {
                             double saldo = Double.parseDouble(partes[4]);
                             double gastado = Double.parseDouble(partes[5]);
                             clientes.add(new ClienteNatural(nombre, email, contrasena, saldo, gastado));
+
                         } else if (tipo.equals("Organizador")) {
                             clientes.add(new Organizador(nombre, email, contrasena));
+
                         } else if (tipo.equals("Administrador")) {
                             clientes.add(new Administrador(nombre, email, contrasena, 0));
                         }
@@ -60,16 +92,28 @@ public class PersistenciaUsuarios {
                 linea = lector.readLine();
             }
 
-            System.out.println("✅ Usuarios cargados: " + clientes.size());
+            System.out.println("✅ Usuarios cargados correctamente: " + clientes.size());
 
         } catch (IOException e) {
-            System.out.println("⚠️ Error al leer el archivo: " + e.getMessage());
+            System.out.println("⚠️ Error al leer el archivo de usuarios: " + e.getMessage());
         }
     }
 
     // =========================================================
-    // 3️⃣ GUARDAR TODOS LOS USUARIOS EN EL ARCHIVO
+    // 3️⃣ GUARDADO DE USUARIOS EN ARCHIVO
     // =========================================================
+
+    /**
+     * Guarda todos los usuarios actualmente almacenados en memoria dentro del
+     * archivo <b>usuarios.txt</b>. Si el archivo no existe, se crea automáticamente.
+     *
+     * Cada usuario se escribe en una línea de texto según su tipo:
+     * <ul>
+     *   <li><b>ClienteNatural</b>: tipo;nombre;email;contraseña;saldo;gastado</li>
+     *   <li><b>Organizador</b>: tipo;nombre;email;contraseña;0;0</li>
+     *   <li><b>Administrador</b>: tipo;nombre;email;contraseña;0;0</li>
+     * </ul>
+     */
     public static void guardarUsuarios() {
 
         try (BufferedWriter escritor = new BufferedWriter(new FileWriter(RUTA_ARCHIVO))) {
@@ -80,6 +124,7 @@ public class PersistenciaUsuarios {
                         c.getUsuarioEmail() + ";" +
                         c.getContraseña();
 
+                // Se añaden campos específicos dependiendo del tipo
                 if (c instanceof ClienteNatural) {
                     ClienteNatural cn = (ClienteNatural) c;
                     linea = linea + ";" + cn.getSaldoVirtual() + ";" + cn.getTotalGastado();
@@ -91,14 +136,25 @@ public class PersistenciaUsuarios {
                 escritor.newLine();
             }
 
+            System.out.println("💾 Usuarios guardados correctamente.");
+
         } catch (IOException e) {
             System.out.println("⚠️ Error al guardar usuarios: " + e.getMessage());
         }
     }
 
     // =========================================================
-    // 4️⃣ AGREGAR CLIENTE NUEVO (PERSISTENTE)
+    // 4️⃣ AGREGAR NUEVO CLIENTE
     // =========================================================
+
+    /**
+     * Agrega un nuevo cliente a la lista de usuarios en memoria, siempre y cuando
+     * no exista otro con el mismo nombre o correo electrónico.
+     *
+     * Si el usuario es agregado con éxito, se actualiza el archivo de persistencia.
+     *
+     * @param nuevo Nuevo cliente a registrar
+     */
     public static void agregarCliente(Cliente nuevo) {
 
         boolean existe = false;
@@ -113,19 +169,34 @@ public class PersistenciaUsuarios {
         if (!existe) {
             clientes.add(nuevo);
             guardarUsuarios();
-            System.out.println("🟢 Cliente agregado: " + nuevo.getNombreUsuario());
+            System.out.println("🟢 Cliente agregado correctamente: " + nuevo.getNombreUsuario());
         } else {
             System.out.println("⚠️ Cliente duplicado, no se agregó.");
         }
     }
 
     // =========================================================
-    // 5️⃣ MÉTODOS DE ACCESO A LA LISTA EN MEMORIA
+    // 5️⃣ MÉTODOS DE ACCESO
     // =========================================================
+
+    /**
+     * Devuelve la lista de usuarios cargados en memoria.
+     * Es una referencia viva, por lo que cualquier modificación
+     * afecta directamente a la lista interna.
+     *
+     * @return Lista de clientes cargados
+     */
     public static List<Cliente> getClientes() {
-        return clientes; // devuelve la lista viva
+        return clientes;
     }
 
+    /**
+     * Busca un cliente dentro de la lista en memoria según su nombre de usuario.
+     * La búsqueda no distingue entre mayúsculas y minúsculas.
+     *
+     * @param nombre Nombre de usuario a buscar
+     * @return El cliente encontrado o null si no existe
+     */
     public static Cliente buscarPorNombre(String nombre) {
         Cliente encontrado = null;
         for (Cliente c : clientes) {
@@ -135,5 +206,4 @@ public class PersistenciaUsuarios {
         }
         return encontrado;
     }
-	
 }

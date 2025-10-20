@@ -108,11 +108,11 @@ public class Tiquete {
      * 
      * @return String formateado con la información completa del tiquete
      */
-    public String getInformación() {
+    public String getInformacion() {
         StringBuilder info = new StringBuilder();
         info.append("Id: ").append(id);
         info.append(" | Evento: ").append(evento.getNombreEvento());
-        info.append(" | Localidad: ").append(localidad.getNombre());
+        info.append(" | Localidad: ").append(localidad.getNombreLocalidad());
         info.append(" | Cliente: ").append(cliente);
         info.append(" | Fecha: ").append(fechaHora);
         info.append(" | Precio Final: ").append(calcularPrecioFinal());

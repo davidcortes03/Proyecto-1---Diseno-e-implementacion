@@ -131,12 +131,12 @@ public class Transacciones {
 		
 		for (int i = 0; i < cantidad; i++) {
 			Tiquete nuevoTiquete = new Tiquete(
-				evento,
-				localidad,
-				this.cliente,
-				localidad.getPrecio(),
-				this.tipo.equals("Cortesía")
-			);
+					evento,
+					localidad,
+					this.cliente,
+					localidad.getPrecio(),
+					this.tipo.equals("Cortesía")
+					);
 			
 			this.tiquetes.add(nuevoTiquete);
 		}
